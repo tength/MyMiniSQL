@@ -24,8 +24,8 @@ public class TokenizerTest {
 
     @Test
     public void testSelect(){
-        //not support for the transform meaning like "\'"
-        String select = "seLecT * from t1 where name>='Queen 大小解决 the odd' and title = 'sdfhlk' order by name ;";
+        //now it support escape character likes "\'"
+        String select = "seLecT * from t1 where name>='Queen 大小解决\\' the odd' and title = 'sdfhlk' order by name ;";
         tString(select);
     }
 

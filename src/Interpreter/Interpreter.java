@@ -14,14 +14,15 @@ public class Interpreter {
 }
 
 class Tokenizer{
-    //not support for the escape character (转义字符) like "\'"
-    private static final String theRegex = "(\'(.*?)\')|\\w+|[^\\s]";
+    private static final String theRegex = "(\'(.*?)[^\\\\]\')|\\w+|[^\\s]";
     private static final Pattern sqlPattern = Pattern.compile(theRegex);
 
     private List<String> splited = new ArrayList<>();
     private int step = 0;
 
     Tokenizer(String toAnalyze){
+        //the output is not unified to the same case in consider of string data
+        // (未同步大小写,主要是出于对字符串数据的考虑)
         Matcher matcher = sqlPattern.matcher(toAnalyze);
         while(matcher.find()){
             splited.add(matcher.group());
