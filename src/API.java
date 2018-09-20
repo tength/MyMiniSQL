@@ -1,7 +1,7 @@
 import CatalogManager.Attribute;
 import CatalogManager.Index;
 import CatalogManager.Table;
-import RecordManager.ConditionNode;
+import Interpreter.ConditionTree;
 import RecordManager.Tuple;
 
 import java.io.File;
@@ -19,15 +19,16 @@ public class API {
 
     static public boolean insertTuples(String tableName, List<Tuple> tuples)
     {return false;}
-    static public boolean deleteTuples(String tableName, List<ConditionNode> conditionNodes)
+    static public boolean deleteTuples(String tableName, ConditionTree conditionTree)
+    {return false;}
+
+    static public boolean selectFromTable(String tableName, List<Attribute> attributes, ConditionTree conditionTree,
+                                              String OrderedAttributeName, boolean isIncrement)
     {return false;}
 
 
-    static public List<Tuple> selectFromTable(String tableName, List<Attribute> attributes, List<ConditionNode> conditionNodes)
-    {return null;}
-
-
-    static public void quit(){};
+    static public void initAll(){}
+    static public void quit(){}
 
 }
 
@@ -60,4 +61,8 @@ class FileAPI{
             return false;
         }
     }
+}
+
+class ErrorAPI{
+    static public void reportError(String errorMsg){}
 }

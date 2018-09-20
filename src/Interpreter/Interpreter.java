@@ -29,6 +29,11 @@ class Tokenizer{
         }
     }
 
+    String toLowerCaseIgnoreQuotedPart(String toLow){
+        //todo
+        return null;
+    }
+
     String getNext(){
         if(step < splited.size()){
             String s = splited.get(step);
