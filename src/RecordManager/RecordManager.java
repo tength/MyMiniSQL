@@ -2,7 +2,7 @@ package RecordManager;
 
 import CatalogManager.Attribute;
 import CatalogManager.Table;
-import Interpreter.ConditionTree;
+import Analyzer.ConditionTree;
 
 import java.util.List;
 

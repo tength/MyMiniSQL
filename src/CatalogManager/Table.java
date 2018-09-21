@@ -1,5 +1,7 @@
 package CatalogManager;
 
+import RecordManager.Tuple;
+
 import java.util.List;
 
 public class Table {
@@ -34,6 +36,17 @@ public class Table {
         oldTable.tupleNumber = tupleNumber;
 
         return oldTable;
+    }
+
+
+    public boolean hasAttribute(String attributeName){
+        return false;
+    }
+    public boolean hasAttributeIndexed(String attributeName){
+        return false;
+    }
+    public boolean isTupleToInsertLegal(Tuple tupleToInsert){
+        return false;
     }
 
 }

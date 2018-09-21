@@ -28,15 +28,6 @@ public class CatalogManager {
     static public boolean hasTable(String tableName){
         return false;
     }
-    static public boolean hasAttribute(String tableName, String attributeName){
-        return false;
-    }
-    static public boolean hasAttributeIndexed(String tableName, String attributeName){
-        return false;
-    }
-    static public boolean isTupleToInsertLegal(String tableName, Tuple tupleToInsert){
-        return false;
-    }
 
 
     static public Table getTableByName(String tableName){

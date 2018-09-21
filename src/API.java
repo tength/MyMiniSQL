@@ -1,7 +1,7 @@
+import Analyzer.*;
 import CatalogManager.Attribute;
 import CatalogManager.Index;
 import CatalogManager.Table;
-import Interpreter.ConditionTree;
 import RecordManager.Tuple;
 
 import java.io.File;
@@ -11,24 +11,25 @@ import java.util.List;
 //todo
 //Top APIs
 public class API {
-    static public boolean createTable(Table newTable) {return false;}
-    static public boolean dropTable(String tableName) {return false;}
-    static public boolean createIndex(Index newIndex) {return false;}
-    static public boolean dropIndex(String IndexName) {return false;}
-
-
-    static public boolean insertTuples(String tableName, List<Tuple> tuples)
-    {return false;}
-    static public boolean deleteTuples(String tableName, ConditionTree conditionTree)
-    {return false;}
-
-    static public boolean selectFromTable(String tableName, List<Attribute> attributes, ConditionTree conditionTree,
-                                              String OrderedAttributeName, boolean isIncrement)
-    {return false;}
-
-
     static public void initAll(){}
     static public void quit(){}
+
+    static public boolean createTable(TableCreateInfo tableCreateInfo) {return false;}
+    static public boolean createIndex(IndexCreateInfo indexCreateInfo) {return false;}
+
+
+    static public boolean insertTuple(InsertInfo insertInfo)
+    {return false;}
+    static public boolean deleteTuples(DeleteInfo deleteInfo)
+    {return false;}
+
+    static public boolean selectFromTable(SelectInfo selectInfo)
+    {return false;}
+
+    static public boolean drop(DropInfo dropInfo) {return false;}
+
+    static private boolean dropTable(String tableName) {return false;}
+    static private boolean dropIndex(String IndexName) {return false;}
 
 }
 
@@ -65,4 +66,7 @@ class FileAPI{
 
 class ErrorAPI{
     static public void reportError(String errorMsg){}
+
+    static public void reportSyntaxError(String errorMsg){}
+    static public void reportInvalidSymbol(String symbolName, String typeName){}
 }

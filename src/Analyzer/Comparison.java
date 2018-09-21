@@ -1,4 +1,4 @@
-package Interpreter;
+package Analyzer;
 
 public enum Comparison {
     bt, //bigger than
