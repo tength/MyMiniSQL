@@ -1,13 +1,15 @@
 package IndexManager;
 
+import Analyzer.IndexCreateInfo;
 import CatalogManager.Index;
 
 import java.util.List;
 
 public class IndexManager {
-    static public boolean createIndex(Index index){
+    static public boolean createIndex(IndexCreateInfo indexCreateInfo){
         return false;
     }
+
     static public boolean dropIndex(String indexName){
         return false;
     }
@@ -20,11 +22,11 @@ public class IndexManager {
         return null;
     }
 
-    static public void insertKey(Index index, String key, int blockOffset, int offset){
-
+    static public boolean insertKey(Index index, String key, int blockOffset, int offset){
+        return false;
     }
 
-    static public void deleteKey(Index index, String key){
-
+    static public boolean deleteKey(Index index, String key){
+        return false;
     }
 }

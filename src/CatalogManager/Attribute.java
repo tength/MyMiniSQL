@@ -4,21 +4,37 @@ public class Attribute {
     private String name;
     private DataType type;
     private int length;
-    private boolean isPrimary = false;
+    private boolean isUnique = false;
 
-    public Attribute(String name, DataType type, int length, boolean isPrimary){
+    private static int FloatSize = Float.SIZE / 8;
+    private static int IntSize = Integer.SIZE / 8;
+    private static int CharSize = Character.SIZE / 8;
+
+    private Attribute(String name, DataType type, int length, boolean isUnique){
         this.name = name;
         this.type = type;
         this.length = length;
-        this.isPrimary = isPrimary;
+        this.isUnique = isUnique;
+    }
+
+    public static Attribute getFloatAttribute(String name, boolean isUnique){
+        return new Attribute(name, DataType.Float, FloatSize, isUnique);
+    }
+
+    public static Attribute getIntegerAttribute(String name, boolean isUnique){
+        return new Attribute(name, DataType.Int, IntSize, isUnique);
+    }
+
+    public static Attribute getCharArrayAttribute(String name, boolean isUnique, int number){
+        return new Attribute(name, DataType.CharArray, CharSize * number, isUnique);
     }
 
     public int getLength() {
         return length;
     }
 
-    public boolean isPrimary() {
-        return isPrimary;
+    public boolean isUnique() {
+        return isUnique;
     }
 
     public DataType getType() {

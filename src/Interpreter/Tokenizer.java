@@ -1,5 +1,7 @@
 package Interpreter;
 
+import API.ErrorAPI;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -12,7 +14,7 @@ public class Tokenizer{
     private List<String> splited = new ArrayList<>();
     private int step = 0;
 
-    Tokenizer(String toAnalyze){
+    public Tokenizer(String toAnalyze){
         //the output is not unified to the same case in consider of string data
         // (未同步大小写,主要是出于对字符串数据的考虑)
         Matcher matcher = sqlPattern.matcher(toAnalyze);
@@ -21,8 +23,31 @@ public class Tokenizer{
         }
     }
 
-    String getCurrentToken(){
+    public String getCurrentToken(){
         return splited.get(step);
+    }
+
+    public boolean checkRedundant(){
+        if(step >= splited.size() - 1){
+            return false;
+        }
+        String next = splited.get(step + 1);
+        if(next.equals(";")){
+            return false;
+        }else{
+            ErrorAPI.reportSyntaxError(next);
+            return true;
+        }
+    }
+
+    public boolean checkNextIsNot(String toCheck){
+        String next = this.getNext();
+        if(next != null && next.equals(toCheck)){
+            return false;
+        }else {
+            ErrorAPI.reportSyntaxError(toCheck);
+            return true;
+        }
     }
 
     String toLowerCaseIgnoreQuotedPart(String toLow){
@@ -30,11 +55,10 @@ public class Tokenizer{
         return null;
     }
 
-    String getNext(){
-        if(step < splited.size()){
-            String s = splited.get(step);
+    public String getNext(){
+        if(step < splited.size() - 1){
             step++;
-            return s;
+            return splited.get(step);
         }else {
             return null;
         }
