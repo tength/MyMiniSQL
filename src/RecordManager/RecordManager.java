@@ -1,5 +1,6 @@
 package RecordManager;
 
+import Analyzer.DeleteInfo;
 import Analyzer.InsertInfo;
 import Analyzer.SelectInfo;
 import CatalogManager.Attribute;
@@ -12,6 +13,7 @@ public class RecordManager {
 
     /**
      * insert single tuple into the table
+     * @param insertInfo insert info
      * @return offset of the inserted tuple
      */
     static public int insert(InsertInfo insertInfo){
@@ -19,7 +21,7 @@ public class RecordManager {
     }
 
     /**
-     * select the tuples satisfy the conditionTree, by do a loop to check the conditionTree, and finally sort the tuples if need.
+     * select the tuples satisfy the conditionTree in the selectInfo, by do a loop to check the conditionTree, and finally sort the tuples if need.
      * use this function when it's hard to make use of index
      * @param selectInfo select info
      * @return sorted tuples satisfy the conditionTree
@@ -30,11 +32,10 @@ public class RecordManager {
 
     /**
      * delete the tuples satisfy the conditionTree and return the number of deleted tuples.
-     * @param tableName table name
-     * @param conditionTree conditionNode root use for checking, null if no conditionTree
+     * @param deleteInfo delete Info
      * @return number of deleted tuples
      */
-    static public int deleteWithCheckLoop(String tableName, ConditionTree conditionTree){
+    static public int deleteWithCheckLoop(DeleteInfo deleteInfo){
         return 0;
     }
 
