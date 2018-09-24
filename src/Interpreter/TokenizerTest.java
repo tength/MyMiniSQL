@@ -17,9 +17,7 @@ public class TokenizerTest {
             ");";
 
     private void showTokenizer(Tokenizer t){
-        for(String s = t.getNext(); s != null; s = t.getNext()){
-            API.show(s);
-        }
+        API.show(t.getTokenListAsString());
     }
 
     private void tString(String s){
@@ -43,8 +41,8 @@ public class TokenizerTest {
     }
 
     @Test
-    public void testCheckNextIsNot(){
+    public void testCheckNextIsNot() throws SqlSyntaxException {
         Tokenizer t = new Tokenizer(select);
-        assertFalse(t.checkNextIsNot("select"));
+        t.assertNextIs("select");
     }
 }

@@ -1,7 +1,5 @@
 package Interpreter;
 
-import API.ErrorAPI;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,42 +10,44 @@ public class Tokenizer{
     private static final String theRegex = "(\'(.*?)[^\\\\]\')|\\w+|[^\\s]";
     private static final Pattern sqlPattern = Pattern.compile(theRegex);
 
-    private List<String> splited = new ArrayList<>();
-    private int step = 0;
+    private List<String> spliced = new ArrayList<>();
+    private int step = -1;
 
     public Tokenizer(String toAnalyze){
         //非字符串值部分同步为小写
         Matcher matcher = sqlPattern.matcher(toLowerCaseIgnoreQuotedPart(toAnalyze));
         while(matcher.find()){
-            splited.add(matcher.group());
+            spliced.add(matcher.group());
         }
     }
 
     public String getCurrentToken(){
-        return splited.get(step);
-    }
-
-    public boolean checkRedundant(){
-        if(step > splited.size() - 1){
-            return false;
-        }
-        String next = splited.get(step + 1);
-        if(next.equals(";")){
-            return false;
-        }else{
-            ErrorAPI.reportSyntaxError(next);
-            return true;
-        }
-    }
-
-    public boolean checkNextIsNot(String toCheck){
-        String next = this.getNext();
-        if(next != null && next.equals(toCheck)){
-            return false;
+        if(step < 0) {
+            return null;
         }else {
-            ErrorAPI.reportSyntaxError(next + " -- should be " + toCheck);
-            return true;
+            return spliced.get(step);
         }
+    }
+
+    public void checkRedundant() throws SqlSyntaxException {
+        if(step > spliced.size() - 1){
+            return;
+        }
+        String next = spliced.get(step + 1);
+        if(!next.equals(";")){
+            throw new SqlSyntaxException("Redundant token: " + next);
+        }
+    }
+
+    public void assertNextIs(String assume) throws SqlSyntaxException {
+        String next = this.getNext();
+        if(!(next != null && next.equals(assume))){
+            throw new SqlSyntaxException(next, assume);
+        }
+    }
+
+    public boolean ifCurrentIs(String assume){
+        return getCurrentToken().equals(assume);
     }
 
     static String toLowerCaseIgnoreQuotedPart(String toLow){
@@ -69,13 +69,34 @@ public class Tokenizer{
     }
 
     public String getNext(){
-        if(step < splited.size()){
-            String next = splited.get(step);
+        if(step < spliced.size() - 1){
             step++;
-            return next;
+            return spliced.get(step);
         }else {
             return null;
         }
     }
 
+    /**
+     * combine before, current, after tokens as the context if allowed
+     * @return the context
+     */
+    public String getContext(){
+        StringBuilder builder = new StringBuilder();
+        if(step > 0){
+            builder.append(spliced.get(step - 1));
+        }
+
+        builder.append(spliced.get(step));
+
+        if(step < spliced.size() - 1){
+            builder.append(spliced.get(step + 1));
+        }
+
+        return builder.toString();
+    }
+
+    public String getTokenListAsString(){
+        return spliced.toString();
+    }
 }

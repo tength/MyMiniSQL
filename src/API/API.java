@@ -8,22 +8,27 @@ public class API {
     static public void initAll(){}
     static public void quit(){}
 
-    static public boolean createTable(TableCreateInfo tableCreateInfo) {return false;}
-    static public boolean createIndex(IndexCreateInfo indexCreateInfo) {return false;}
+    static public void createTable(TableCreateInfo tableCreateInfo)
+    {}
+    static public void createIndex(IndexCreateInfo indexCreateInfo)
+    {}
 
 
-    static public boolean insertTuple(InsertInfo insertInfo)
-    {return false;}
-    static public boolean deleteTuples(DeleteInfo deleteInfo)
-    {return false;}
+    static public void insertTuple(InsertInfo insertInfo)
+    {}
+    static public void deleteTuples(DeleteInfo deleteInfo)
+    {}
 
-    static public boolean selectFromTable(SelectInfo selectInfo)
-    {return false;}
+    static public void selectFromTable(SelectInfo selectInfo)
+    {}
 
-    static public boolean drop(DropInfo dropInfo) {return false;}
+    static public void drop(DropInfo dropInfo)
+    {}
 
-    static private boolean dropTable(String tableName) {return false;}
-    static private boolean dropIndex(String IndexName) {return false;}
+    static private void dropTable(String tableName)
+    {}
+    static private void dropIndex(String IndexName)
+    {}
 
     static public void show(String s){
         System.out.println(s);

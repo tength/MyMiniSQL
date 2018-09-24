@@ -1,6 +1,7 @@
 package Analyzer;
 
 import API.ErrorAPI;
+import Interpreter.SqlSyntaxException;
 import Interpreter.Tokenizer;
 
 public class Analyzer {
@@ -16,41 +17,29 @@ public class Analyzer {
         return null;
     }
 
-    static public IndexCreateInfo createIndex(Tokenizer tokenizer){
+    static public IndexCreateInfo createIndex(Tokenizer tokenizer) throws SqlSyntaxException {
         String indexName = tokenizer.getNext();
-        if(tokenizer.checkNextIsNot("on")){
-            return null;
-        }
+
+        tokenizer.assertNextIs("on");
 
         String tableName = tokenizer.getNext();
 
-        if(tokenizer.checkNextIsNot("(")){
-            return null;
-        }
+        tokenizer.assertNextIs("(");
 
         String attributeName = tokenizer.getNext();
 
-        if(tokenizer.checkNextIsNot(")")){
-            return null;
-        }
-        if(tokenizer.checkRedundant()){
-            return null;
-        }
+        tokenizer.assertNextIs(")");
+        tokenizer.checkRedundant();
 
         return new IndexCreateInfo(indexName, tableName, attributeName);
     }
 
-    static public TableCreateInfo createTable(Tokenizer tokenizer){
-        if(tokenizer.checkNextIsNot("(")){
-            return null;
-        }
-        do{
-            break;
-        }while (tokenizer.checkNextIsNot(","));
+    static public TableCreateInfo createTable(Tokenizer tokenizer) throws SqlSyntaxException {
+        tokenizer.assertNextIs("(");
         return null;
     }
 
-    static public DropInfo drop(Tokenizer tokenizer){
+    static public DropInfo drop(Tokenizer tokenizer) throws SqlSyntaxException {
         DropInfo.DropType dropType = DropInfo.DropType.DropTable;
         String typeString = tokenizer.getNext();
         switch (typeString){
@@ -61,15 +50,12 @@ public class Analyzer {
                 dropType = DropInfo.DropType.DropIndex;
                 break;
             default:
-                ErrorAPI.reportInvalidSymbol(typeString, "type to drop");
-                return null;
+                throw new SqlSyntaxException(tokenizer.getContext());
         }
 
         String name = tokenizer.getNext();
 
-        if (tokenizer.checkRedundant()){
-            return null;
-        }
+        tokenizer.checkRedundant();
 
         return new DropInfo(dropType, name);
     }
