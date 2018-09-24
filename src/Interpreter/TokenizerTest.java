@@ -6,8 +6,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TokenizerTest {
-    static final String select = "seLecT * from t1 where name>='Queen 大小解决\\' the odd' and title = 'sdf HHH k' order by name ;";
-    static final String create = "Create Table aaa (\n" +
+    private static final String select = "seLecT * from t1 where name>='Queen 大小解决\\' the odd' and title = 'sdf HHH k' order by name ;";
+    private static final String create = "Create Table aaa (\n" +
             "\t\tsno char(8),\n" +
             "\t\tsname char(16) unique,\n" +
             "\t\tsage int,\n" +

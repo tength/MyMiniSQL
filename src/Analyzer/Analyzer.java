@@ -44,9 +44,9 @@ public class Analyzer {
         if(tokenizer.checkNextIsNot("(")){
             return null;
         }
-        while(true){
+        do{
             break;
-        }
+        }while (tokenizer.checkNextIsNot(","));
         return null;
     }
 
