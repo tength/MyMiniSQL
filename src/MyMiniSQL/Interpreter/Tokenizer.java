@@ -6,8 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Tokenizer{
-    private static final String theRegex = "(\'(.*?)[^\\\\]\')|(-?[\\d]+\\.?[\\d]*)|\\w+|[^\\s]";
-    private static final Pattern sqlPattern = Pattern.compile(theRegex);
+    private static final String tokenRegex = "(\'(.*?)[^\\\\]\')|(-?[\\d]+\\.?[\\d]*)|\\w+|[^\\s]";
+            //the regex matches (from left to right) charArray('s\'tr') , number(32, 3.14, -23), word, symbols except (' ', '\t', '\n')
+    private static final Pattern sqlPattern = Pattern.compile(tokenRegex);
 
     private List<String> spliced = new ArrayList<>();
     private int step = -1;

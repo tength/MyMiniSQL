@@ -41,16 +41,43 @@ public class InsertInfo {
 }
 
 class InsertValue{
-    String value;
-    DataType type;
-    InsertValue(String value, DataType type){
-        this.value = value;
+    private String value;
+    private DataType type;
+
+    InsertValue(String value, DataType type) throws MySqlSyntaxException {
         this.type = type;
+        if(this.type == DataType.CharArray){
+            this.value = squeeze(value);
+        }else {
+            this.value = value;
+        }
     }
 
     @Override
     public String toString() {
         return String.format(" (%s, %s) ", value, type.toString());
+    }
+
+    static private String squeeze(String s) throws MySqlSyntaxException {
+        StringBuilder builder = new StringBuilder(s.length());
+
+        int lengthLimit = s.length() - 1;
+        //i = 1 and lengthLimit to ignore '\'' in head and tail
+        for(int i = 1; i < lengthLimit; ++i){
+            char c = s.charAt(i);
+            if(c != '\\'){
+                builder.append(c);
+            }else {
+                ++i;
+                if(!(i < lengthLimit)){
+                    throw new MySqlSyntaxException("unrecognized '\\' in tail of " + s);
+                }
+                //support for chars ('\\', '\'', '\"')
+                //not support for ('\n', '\t')
+                builder.append(s.charAt(i));
+            }
+        }
+        return builder.toString();
     }
 }
 

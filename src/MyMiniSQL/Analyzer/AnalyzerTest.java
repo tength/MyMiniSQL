@@ -16,7 +16,7 @@ public class AnalyzerTest {
     private static final String dropTableSQL = "drop tAblE student; ";
     private static final String dropIndexSQL = "drop inDeX studentIndex; ";
 
-    private static final String insertSQL = "insert into student values('123456', 'hzx', 20, 'Male', 3.44);";
+    private static final String insertSQL = "insert into student values('123456', 'hz\\\'x', 20, 'M\\\\ale', 3.44, -23, -24.44);";
 
     private static final String getExceptionInCorrectSentence = "throw Exception in a correct sentence";
 
