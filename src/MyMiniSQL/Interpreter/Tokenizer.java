@@ -28,20 +28,20 @@ public class Tokenizer{
         }
     }
 
-    public void checkRedundant() throws SqlSyntaxException {
-        if(step > spliced.size() - 1){
+    public void checkRedundant() throws MySqlSyntaxException {
+        if(step >= spliced.size() - 1){
             return;
         }
         String next = spliced.get(step + 1);
         if(!next.equals(";")){
-            throw new SqlSyntaxException("Redundant token: " + next);
+            throw new MySqlSyntaxException("Redundant token: " + next);
         }
     }
 
-    public void assertNextIs(String assume) throws SqlSyntaxException {
+    public void assertNextIs(String assume) throws MySqlSyntaxException {
         String next = this.getNext();
         if(!(next != null && next.equals(assume))){
-            throw new SqlSyntaxException(next, assume);
+            throw new MySqlSyntaxException(next, assume);
         }
     }
 

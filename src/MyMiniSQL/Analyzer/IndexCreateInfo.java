@@ -23,4 +23,15 @@ public class IndexCreateInfo {
     public String getAttributeName() {
         return attributeName;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("indexName: ").append(indexName).append("\n");
+        builder.append("tableName: ").append(tableName).append("\n");
+        builder.append("attributeName: ").append(attributeName).append("\n");
+
+        return builder.toString();
+    }
 }

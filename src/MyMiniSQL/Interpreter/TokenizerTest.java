@@ -4,15 +4,9 @@ import MyMiniSQL.API;
 import org.junit.Test;
 
 public class TokenizerTest {
+
     private static final String select = "seLecT * from t1 where name>='Queen 大小解决\\' the odd' and title = 'sdf HHH k' order by name ;";
-    private static final String create = "Create Table aaa (\n" +
-            "\t\tsno char(8),\n" +
-            "\t\tsname char(16) unique,\n" +
-            "\t\tsage int,\n" +
-            "\t\tsgender char (1),\n" +
-            "\t\tsmoney float,\n" +
-            "\t\tprimary key ( sno )\n" +
-            ");";
+    private static final String create = "Create Table aaa (sno char(8), sname char(16) unique,sage int,sgender char (1),smoney float,primary key ( sno ));";
 
     private void showTokenizer(Tokenizer t){
         API.show(t.getTokenListAsString());
@@ -39,7 +33,7 @@ public class TokenizerTest {
     }
 
     @Test
-    public void testCheckNextIsNot() throws SqlSyntaxException {
+    public void testCheckNextIsNot() throws MySqlSyntaxException {
         Tokenizer t = new Tokenizer(select);
         t.assertNextIs("select");
     }

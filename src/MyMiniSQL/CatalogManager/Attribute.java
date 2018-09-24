@@ -10,7 +10,7 @@ public class Attribute {
     private static int IntSize = Integer.SIZE / 8;
     private static int CharSize = Character.SIZE / 8;
 
-    private Attribute(String name, DataType type, int length, boolean isUnique){
+    public Attribute(String name, DataType type, int length, boolean isUnique){
         this.name = name;
         this.type = type;
         this.length = length;

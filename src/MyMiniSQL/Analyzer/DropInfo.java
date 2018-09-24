@@ -20,4 +20,9 @@ public class DropInfo {
         this.dropType = dropType;
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Drop (Type: %s, Name: %s)", dropType.toString(), name);
+    }
 }
