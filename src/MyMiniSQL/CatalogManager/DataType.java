@@ -8,8 +8,8 @@ public enum DataType {
     Int, Float, CharArray;
 
 
-    static private Pattern integerPattern = Pattern.compile("^[-|+]?[\\d]*$");
-    static private Pattern floatPattern = Pattern.compile("^[-|+]?[.\\d]*$");
+    static private Pattern integerPattern = Pattern.compile("^-?[\\d]+");
+    static private Pattern floatPattern = Pattern.compile("^-?[\\d]+\\.[\\d]*");
 
     static private boolean isInteger(String s){
         return integerPattern.matcher(s).matches();

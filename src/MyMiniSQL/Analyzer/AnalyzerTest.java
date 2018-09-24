@@ -16,6 +16,8 @@ public class AnalyzerTest {
     private static final String dropTableSQL = "drop tAblE student; ";
     private static final String dropIndexSQL = "drop inDeX studentIndex; ";
 
+    private static final String insertSQL = "insert into student values('123456', 'hzx', 20, 'Male', 3.44);";
+
     private static final String getExceptionInCorrectSentence = "throw Exception in a correct sentence";
 
     @Test
@@ -23,12 +25,23 @@ public class AnalyzerTest {
     }
 
     @Test
-    public void insert() {
-        
+    public void delete() {
     }
 
     @Test
-    public void delete() {
+    public void insert() {
+        Tokenizer tokenizer = new Tokenizer(insertSQL);
+        tokenizer.getNext();
+
+        InsertInfo insertInfo;
+
+        try {
+            insertInfo = Analyzer.insert(tokenizer);
+            API.show(insertInfo.toString());
+        } catch (MySqlSyntaxException e) {
+            e.printStackTrace();
+            fail(getExceptionInCorrectSentence);
+        }
     }
 
     @Test

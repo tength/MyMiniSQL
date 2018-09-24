@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Tokenizer{
-    private static final String theRegex = "(\'(.*?)[^\\\\]\')|\\w+|[^\\s]";
+    private static final String theRegex = "(\'(.*?)[^\\\\]\')|(-?[\\d]+\\.?[\\d]*)|\\w+|[^\\s]";
     private static final Pattern sqlPattern = Pattern.compile(theRegex);
 
     private List<String> spliced = new ArrayList<>();

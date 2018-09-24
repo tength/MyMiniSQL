@@ -12,12 +12,39 @@ public class Analyzer {
         return null;
     }
 
-    static public InsertInfo insert(Tokenizer tokenizer){
+    static public DeleteInfo delete(Tokenizer tokenizer){
         return null;
     }
 
-    static public DeleteInfo delete(Tokenizer tokenizer){
-        return null;
+    static public InsertInfo insert(Tokenizer tokenizer) throws MySqlSyntaxException {
+        tokenizer.assertNextIs("into");
+
+        String tableName = tokenizer.getNext();
+        InsertInfo insertInfo = new InsertInfo(tableName);
+
+        tokenizer.assertNextIs("values");
+        tokenizer.assertNextIs("(");
+
+        boolean endFlag = false;
+        while(!endFlag){
+            String value = tokenizer.getNext();
+            insertInfo.addValue(value);
+
+            String delimiter  = tokenizer.getNext();
+            switch (delimiter){
+                case ",":
+                    break;
+                case ")":
+                    endFlag = true;
+                    break;
+                default:
+                    throw new MySqlSyntaxException("wrong delimiter -- " + delimiter);
+            }
+        }
+
+        tokenizer.checkRedundant();
+
+        return insertInfo;
     }
 
     static public IndexCreateInfo createIndex(Tokenizer tokenizer) throws MySqlSyntaxException {
