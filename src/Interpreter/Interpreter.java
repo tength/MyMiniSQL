@@ -6,6 +6,24 @@ public class Interpreter {
         switch (tokenizer.getNext()){
             case "select":
                 break;
+            case "insert":
+                break;
+            case "create":
+                switch (tokenizer.getNext()){
+                    case "table":
+                        break;
+                    case "index":
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case "drop":
+                break;
+            case "delete":
+                break;
+            default:
+                break;
         }
 
     }

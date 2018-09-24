@@ -44,11 +44,10 @@ public class RecordManager {
     /**
      * make project to the result table(投影操作)
      * @param resultTable result table to deal with
-     * @param tableName table name
      * @param attributes attributes to remain in the result list of tuple
      * @return result table projected
      */
-    static public ResultTable project(ResultTable resultTable, String tableName, List<Attribute> attributes){
+    static public ResultTable project(ResultTable resultTable, List<String> attributes){
         return null;
     }
 

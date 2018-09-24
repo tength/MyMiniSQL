@@ -3,6 +3,7 @@ package Interpreter;
 import API.ErrorAPI;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,9 +16,8 @@ public class Tokenizer{
     private int step = 0;
 
     public Tokenizer(String toAnalyze){
-        //the output is not unified to the same case in consider of string data
-        // (未同步大小写,主要是出于对字符串数据的考虑)
-        Matcher matcher = sqlPattern.matcher(toAnalyze);
+        //非字符串值部分同步为小写
+        Matcher matcher = sqlPattern.matcher(toLowerCaseIgnoreQuotedPart(toAnalyze));
         while(matcher.find()){
             splited.add(matcher.group());
         }
@@ -28,7 +28,7 @@ public class Tokenizer{
     }
 
     public boolean checkRedundant(){
-        if(step >= splited.size() - 1){
+        if(step > splited.size() - 1){
             return false;
         }
         String next = splited.get(step + 1);
@@ -45,20 +45,34 @@ public class Tokenizer{
         if(next != null && next.equals(toCheck)){
             return false;
         }else {
-            ErrorAPI.reportSyntaxError(toCheck);
+            ErrorAPI.reportSyntaxError(next + " -- should be " + toCheck);
             return true;
         }
     }
 
-    String toLowerCaseIgnoreQuotedPart(String toLow){
-        //todo
-        return null;
+    static String toLowerCaseIgnoreQuotedPart(String toLow){
+        char[] chars = toLow.toCharArray();
+        int lengthLimit = toLow.length() - 1;
+        boolean flag = true;
+        for(int i = 0; i < lengthLimit; i++){
+            if(chars[i] != '\\' && chars[i+1] == '\''){
+                flag = !flag;
+            }
+            if(flag && Character.isUpperCase(chars[i])){
+                chars[i] = Character.toLowerCase(chars[i]);
+            }
+        }
+        if(Character.isUpperCase(chars[lengthLimit])){
+            chars[lengthLimit] = Character.toLowerCase(chars[lengthLimit]);
+        }
+        return new String(chars);
     }
 
     public String getNext(){
-        if(step < splited.size() - 1){
+        if(step < splited.size()){
+            String next = splited.get(step);
             step++;
-            return splited.get(step);
+            return next;
         }else {
             return null;
         }

@@ -41,6 +41,12 @@ public class Analyzer {
     }
 
     static public TableCreateInfo createTable(Tokenizer tokenizer){
+        if(tokenizer.checkNextIsNot("(")){
+            return null;
+        }
+        while(true){
+            break;
+        }
         return null;
     }
 

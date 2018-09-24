@@ -25,5 +25,9 @@ public class API {
     static private boolean dropTable(String tableName) {return false;}
     static private boolean dropIndex(String IndexName) {return false;}
 
+    static public void show(String s){
+        System.out.println(s);
+    }
+
 }
 

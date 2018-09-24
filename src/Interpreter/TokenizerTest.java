@@ -1,14 +1,24 @@
 package Interpreter;
 
+import API.API;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class TokenizerTest {
+    static final String select = "seLecT * from t1 where name>='Queen 大小解决\\' the odd' and title = 'sdf HHH k' order by name ;";
+    static final String create = "Create Table aaa (\n" +
+            "\t\tsno char(8),\n" +
+            "\t\tsname char(16) unique,\n" +
+            "\t\tsage int,\n" +
+            "\t\tsgender char (1),\n" +
+            "\t\tsmoney float,\n" +
+            "\t\tprimary key ( sno )\n" +
+            ");";
 
     private void showTokenizer(Tokenizer t){
         for(String s = t.getNext(); s != null; s = t.getNext()){
-            System.out.println(s);
+            API.show(s);
         }
     }
 
@@ -17,28 +27,24 @@ public class TokenizerTest {
     }
 
     @Test
-    public void testEqualIgnoreCase(){
-        String s1 = "Abb", s2 = "aBb";
-        assertTrue(s1.equalsIgnoreCase(s2));
+    public void testToLower(){
+        API.show(Tokenizer.toLowerCaseIgnoreQuotedPart(select));
     }
 
     @Test
     public void testSelect(){
         //now it support escape character likes "\'"
-        String select = "seLecT * from t1 where name>='Queen 大小解决\\' the odd' and title = 'sdfhlk' order by name ;";
         tString(select);
     }
 
     @Test
     public void testCreate(){
-        String create = "Create Table aaa (\n" +
-                "\t\tsno char(8),\n" +
-                "\t\tsname char(16) unique,\n" +
-                "\t\tsage int,\n" +
-                "\t\tsgender char (1),\n" +
-                "\t\tsmoney float,\n" +
-                "\t\tprimary key ( sno )\n" +
-                ");";
         tString(create);
+    }
+
+    @Test
+    public void testCheckNextIsNot(){
+        Tokenizer t = new Tokenizer(select);
+        assertFalse(t.checkNextIsNot("select"));
     }
 }
