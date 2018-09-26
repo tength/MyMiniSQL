@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 public class Analyzer {
 
     static public SelectInfo select(Tokenizer tokenizer) throws MySqlSyntaxException {
+        //todo: untested!
         SelectInfo selectInfo = new SelectInfo();
 
         String firstToSelect = tokenizer.getNext();
@@ -102,7 +103,13 @@ public class Analyzer {
             String attributeToSortBy = tokenizer.getNext();
             selectInfo.setOrderedAttributeName(attributeToSortBy);
             String sortOrder = tokenizer.getNext();
+
+            if(sortOrder == null){
+                return selectInfo;
+            }
+
             switch (sortOrder){
+                case ";":
                 case "asc":
                     selectInfo.setAscending(true);
                     break;
@@ -117,8 +124,31 @@ public class Analyzer {
         return selectInfo;
     }
 
-    static public DeleteInfo delete(Tokenizer tokenizer){
-        return null;
+    static public DeleteInfo delete(Tokenizer tokenizer) throws MySqlSyntaxException {
+        //todo: untested!
+        tokenizer.assertNextIs("from");
+        String tableName = tokenizer.getNext();
+
+        DeleteInfo deleteInfo = new DeleteInfo(tableName);
+
+        String afterTableName = tokenizer.getNext();
+        if(afterTableName == null || afterTableName.equals(";")){
+            tokenizer.checkRedundant();
+            return deleteInfo;
+        }
+
+        tokenizer.assertNextIs("where");
+
+        List<String> conditionTokenList = new ArrayList<>();
+        String temp = tokenizer.getNext();
+        while(!(temp == null || temp.equals(";"))){
+            conditionTokenList.add(temp);
+            temp = tokenizer.getNext();
+        }
+        deleteInfo.setConditionTree(ConditionTree.parseToConditionTree(conditionTokenList));
+        tokenizer.checkRedundant();
+
+        return deleteInfo;
     }
 
     static public InsertInfo insert(Tokenizer tokenizer) throws MySqlSyntaxException {
@@ -240,7 +270,7 @@ public class Analyzer {
     }
 
     static public DropInfo drop(Tokenizer tokenizer) throws MySqlSyntaxException {
-        DropInfo.DropType dropType = DropInfo.DropType.DropTable;
+        DropInfo.DropType dropType;
         String typeString = tokenizer.getNext();
         switch (typeString){
             case "table":
