@@ -4,12 +4,117 @@ import MyMiniSQL.CatalogManager.DataType;
 import MyMiniSQL.Interpreter.MySqlSyntaxException;
 import MyMiniSQL.Interpreter.Tokenizer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class Analyzer {
 
-    static public SelectInfo select(Tokenizer tokenizer){
-        return null;
+    static public SelectInfo select(Tokenizer tokenizer) throws MySqlSyntaxException {
+        SelectInfo selectInfo = new SelectInfo();
+
+        String firstToSelect = tokenizer.getNext();
+        if(!firstToSelect.equals("*")){
+            selectInfo.addAttributeToSelect(firstToSelect);
+            String next = tokenizer.getNext();
+            while(next.equals(",")){
+                next = tokenizer.getNext();
+                selectInfo.addAttributeToSelect(next);
+                next = tokenizer.getNext();
+            }
+        }
+
+        tokenizer.assertCurrentIs("from");
+
+        String firstTokenAfterFrom = tokenizer.getNext();
+        if(firstTokenAfterFrom.equals("(")){
+
+            selectInfo.setRecursiveSelect(true);
+
+            tokenizer.assertNextIs("select");
+            //the token "select" would be ignored in the selectInfo.toSelectFrom if isRecursiveSelect
+
+            String temp = tokenizer.getNext();
+            if(temp.equals(")")){
+                throw new MySqlSyntaxException("Empty select clause!");
+            }
+
+            int bracketCounter = 1;
+            //pair the brackets
+            while(bracketCounter > 0){
+                if(temp.equals("(")){
+                    bracketCounter++;
+                }
+
+                //add the tokens to combine another select clause
+                selectInfo.addToSelectFrom(temp);
+
+                temp = tokenizer.getNext();
+                if(temp == null){
+                    throw new MySqlSyntaxException(Integer.toString(bracketCounter) + " Unclosed bracket in clause!");
+                }
+
+                //be here to make sure jump out the loop without adding the last ')'
+                if(temp.equals(")")){
+                    bracketCounter--;
+                }
+            }
+        }else {
+            selectInfo.setRecursiveSelect(false);
+
+            selectInfo.addToSelectFrom(firstTokenAfterFrom);
+            String next = tokenizer.getNext();
+            while(next.equals(",")){
+                next = tokenizer.getNext();
+                selectInfo.addToSelectFrom(next);
+                next = tokenizer.getNext();
+            }
+            tokenizer.backOneStep();
+        }
+
+        String afterSelectFrom = tokenizer.getNext();
+        if(afterSelectFrom == null || afterSelectFrom.equals(";")){
+            tokenizer.checkRedundant();
+            return selectInfo;
+        }
+
+        if(tokenizer.ifCurrentIs("where")){
+            List<String> conditionTokenList = new ArrayList<>();
+            String temp = tokenizer.getNext();
+            while(temp != null){
+                switch (temp){
+                    case ";":
+                        tokenizer.checkRedundant();
+                        break;
+                    case "order":
+                        break;
+                    default:
+                        conditionTokenList.add(temp);
+                }
+                temp = tokenizer.getNext();
+            }
+            selectInfo.setConditionTree(ConditionTree.parseToConditionTree(conditionTokenList));
+        }
+
+        String isOrder = tokenizer.getCurrentToken();
+        if(isOrder != null && isOrder.equals("order")){
+            tokenizer.assertNextIs("by");
+            String attributeToSortBy = tokenizer.getNext();
+            selectInfo.setOrderedAttributeName(attributeToSortBy);
+            String sortOrder = tokenizer.getNext();
+            switch (sortOrder){
+                case "asc":
+                    selectInfo.setAscending(true);
+                    break;
+                case "desc":
+                    break;
+                default:
+                    throw new MySqlSyntaxException("unknown sort order -- " + sortOrder);
+            }
+            tokenizer.checkRedundant();
+        }
+
+        return selectInfo;
     }
 
     static public DeleteInfo delete(Tokenizer tokenizer){

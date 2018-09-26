@@ -10,10 +10,12 @@ public class Tokenizer{
             //the regex matches (from left to right) charArray('s\'tr') , number(32, 3.14, -23), word, symbols except (' ', '\t', '\n')
     private static final Pattern sqlPattern = Pattern.compile(tokenRegex);
 
-    private List<String> spliced = new ArrayList<>();
+    private List<String> spliced;
     private int step = -1;
 
     public Tokenizer(String toAnalyze){
+        spliced = new ArrayList<>();
+
         //非字符串值部分同步为小写
         Matcher matcher = sqlPattern.matcher(toLowerCaseIgnoreQuotedPart(toAnalyze));
         while(matcher.find()){
@@ -21,11 +23,23 @@ public class Tokenizer{
         }
     }
 
+    public Tokenizer(List<String> tokenList){
+        this.spliced = tokenList;
+    }
+
     public String getCurrentToken(){
         if(step < 0) {
             return null;
         }else {
             return spliced.get(step);
+        }
+    }
+
+    public void backOneStep(){
+        if(step > 0){
+            step--;
+        }else {
+            throw new RuntimeException("you could not back now");
         }
     }
 
@@ -43,6 +57,12 @@ public class Tokenizer{
         String next = this.getNext();
         if(!(next != null && next.equals(assume))){
             throw new MySqlSyntaxException(next, assume);
+        }
+    }
+
+    public void assertCurrentIs(String assume) throws MySqlSyntaxException {
+        if(!ifCurrentIs(assume)){
+            throw new MySqlSyntaxException(getCurrentToken(), assume);
         }
     }
 

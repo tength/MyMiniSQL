@@ -10,7 +10,7 @@ public class InsertInfo {
     private String tableName;
     private List<InsertValue> values = new ArrayList<>();
 
-    public InsertInfo(String tableName){
+    InsertInfo(String tableName){
         this.tableName = tableName;
     }
 
