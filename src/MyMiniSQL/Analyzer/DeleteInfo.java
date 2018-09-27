@@ -2,7 +2,7 @@ package MyMiniSQL.Analyzer;
 
 public class DeleteInfo {
     private String tableName;
-    private ConditionTree conditionTree;
+    private ConditionExpression conditionExpression;
 
     DeleteInfo(String tableName){
         this.tableName = tableName;
@@ -12,11 +12,11 @@ public class DeleteInfo {
         return tableName;
     }
 
-    public ConditionTree getConditionTree() {
-        return conditionTree;
+    public ConditionExpression getConditionExpression() {
+        return conditionExpression;
     }
 
-    public void setConditionTree(ConditionTree conditionTree) {
-        this.conditionTree = conditionTree;
+    public void setConditionExpression(ConditionExpression conditionExpression) {
+        this.conditionExpression = conditionExpression;
     }
 }

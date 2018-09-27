@@ -21,10 +21,46 @@ public class Tokenizer{
         while(matcher.find()){
             spliced.add(matcher.group());
         }
+        this.addTail();
     }
 
     public Tokenizer(List<String> tokenList){
         this.spliced = tokenList;
+        this.addTail();
+    }
+
+    private void addTail(){
+        //add ';' as the tail
+        String last = spliced.get(spliced.size() - 1);
+        if(!last.equals(";")){
+            spliced.add(";");
+        }
+    }
+
+
+    /**
+     * for input likes ["a", ",", "b", ",","c","from"...] / or ["a", "from"...]
+     * this function would return ["a", "b", "c"] / or ["a"]
+     * and the step would back to make getNext() returns "from"
+     * @param delimiter the delimiter is the useless tokens between the asked tokens
+     * @return the asked tokens
+     */
+    public List<String> getTokensSplicedBy(String delimiter){
+        List<String> tokens = new ArrayList<>();
+
+        String temp = this.getNext();
+        tokens.add(temp);
+
+        temp = getNext();
+        while(temp.equals(delimiter)){
+            temp = getNext();
+            tokens.add(temp);
+            temp = getNext();
+        }
+
+        this.backOneStep();
+
+        return tokens;
     }
 
     public String getCurrentToken(){
@@ -94,6 +130,15 @@ public class Tokenizer{
             return spliced.get(step);
         }else {
             return null;
+        }
+    }
+
+    public String getNextThrowNull() throws MySqlSyntaxException {
+        String temp = getNext();
+        if(temp == null){
+            throw new MySqlSyntaxException("Tokens ended unexpected ");
+        }else {
+            return temp;
         }
     }
 

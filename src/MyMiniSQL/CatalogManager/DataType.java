@@ -34,4 +34,8 @@ public enum DataType {
             throw new MySqlSyntaxException("can't recognize type for " + s);
         }
     }
+
+    static public boolean isConstantValue(String s){
+        return isInteger(s) || isCharArray(s) || isFloat(s);
+    }
 }

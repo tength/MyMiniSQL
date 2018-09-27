@@ -5,12 +5,20 @@ import java.util.List;
 
 public class SelectInfo {
 
+    public void setAttributesToSelect(List<String> attributesToSelect) {
+        this.attributesToSelect = attributesToSelect;
+    }
+
+    public void setTablesToSelectFrom(List<String> tablesToSelectFrom) {
+        this.TablesToSelectFrom = tablesToSelectFrom;
+    }
+
     private List<String> attributesToSelect = new ArrayList<>();
-    private List<String> toSelectFrom = new ArrayList<>();
+    private List<String> TablesToSelectFrom = new ArrayList<>();
 
-    private boolean isRecursiveSelect = false;
+    private SelectInfo recursiveSelect = null;
 
-    private ConditionTree conditionTree = null;
+    private ConditionExpression conditionExpression = null;
 
     //sort on primary key if null
     private String orderedAttributeName = null;
@@ -28,16 +36,16 @@ public class SelectInfo {
         return attributesToSelect;
     }
 
-    public List<String> getToSelectFrom() {
-        return toSelectFrom;
+    public List<String> getTablesToSelectFrom() {
+        return TablesToSelectFrom;
     }
 
-    public boolean isRecursiveSelect() {
-        return isRecursiveSelect;
+    public boolean getRecursiveSelect() {
+        return recursiveSelect == null;
     }
 
-    public ConditionTree getConditionTree() {
-        return conditionTree;
+    public ConditionExpression getConditionExpression() {
+        return conditionExpression;
     }
 
     public String getOrderedAttributeName() {
@@ -48,20 +56,16 @@ public class SelectInfo {
         return isAscending;
     }
 
-    public void setRecursiveSelect(boolean recursiveSelect) {
-        isRecursiveSelect = recursiveSelect;
+    public void setRecursiveSelect(SelectInfo recursiveSelect) {
+        this.recursiveSelect= recursiveSelect;
     }
 
     public void setAscending(boolean ascending) {
         isAscending = ascending;
     }
 
-    public void addToSelectFrom(String token) {
-        this.toSelectFrom.add(token);
-    }
-
-    public void setConditionTree(ConditionTree conditionTree) {
-        this.conditionTree = conditionTree;
+    public void setConditionExpression(ConditionExpression conditionExpression) {
+        this.conditionExpression = conditionExpression;
     }
 
     public void setOrderedAttributeName(String orderedAttributeName) {

@@ -10,30 +10,42 @@ import java.util.regex.Pattern;
 
 public class Analyzer {
 
+    private static Pattern idPattern = Pattern.compile("\\w+");
+
+    public static boolean isValidId(String id){
+        return idPattern.matcher(id).matches();
+    }
+
+    public static boolean isConstantValue(String s){
+        return DataType.isConstantValue(s);
+    }
+
+    public static void checkIdValid(String id) throws MySqlSyntaxException {
+        if(!isValidId(id)){
+            throw new MySqlSyntaxException("Invalid symbol as identification -- " + id);
+        }
+    }
+
     static public SelectInfo select(Tokenizer tokenizer) throws MySqlSyntaxException {
         //todo: untested!
         SelectInfo selectInfo = new SelectInfo();
 
         String firstToSelect = tokenizer.getNext();
         if(!firstToSelect.equals("*")){
-            selectInfo.addAttributeToSelect(firstToSelect);
-            String next = tokenizer.getNext();
-            while(next.equals(",")){
-                next = tokenizer.getNext();
-                selectInfo.addAttributeToSelect(next);
-                next = tokenizer.getNext();
-            }
+            tokenizer.backOneStep();
+            List<String> attrs = tokenizer.getTokensSplicedBy(",");
+            selectInfo.setAttributesToSelect(attrs);
+        }else {
+            selectInfo.setAttributesToSelect(null);
         }
 
         tokenizer.assertCurrentIs("from");
 
         String firstTokenAfterFrom = tokenizer.getNext();
         if(firstTokenAfterFrom.equals("(")){
-
-            selectInfo.setRecursiveSelect(true);
+            List<String> recursiveSelectTokens = new ArrayList<>();
 
             tokenizer.assertNextIs("select");
-            //the token "select" would be ignored in the selectInfo.toSelectFrom if isRecursiveSelect
 
             String temp = tokenizer.getNext();
             if(temp.equals(")")){
@@ -48,7 +60,7 @@ public class Analyzer {
                 }
 
                 //add the tokens to combine another select clause
-                selectInfo.addToSelectFrom(temp);
+                recursiveSelectTokens.add(temp);
 
                 temp = tokenizer.getNext();
                 if(temp == null){
@@ -60,16 +72,12 @@ public class Analyzer {
                     bracketCounter--;
                 }
             }
-        }else {
-            selectInfo.setRecursiveSelect(false);
 
-            selectInfo.addToSelectFrom(firstTokenAfterFrom);
-            String next = tokenizer.getNext();
-            while(next.equals(",")){
-                next = tokenizer.getNext();
-                selectInfo.addToSelectFrom(next);
-                next = tokenizer.getNext();
-            }
+            selectInfo.setRecursiveSelect(select(new Tokenizer(recursiveSelectTokens)));
+
+        }else {
+            tokenizer.backOneStep();
+            selectInfo.setTablesToSelectFrom(tokenizer.getTokensSplicedBy(","));
             tokenizer.backOneStep();
         }
 
@@ -94,7 +102,7 @@ public class Analyzer {
                 }
                 temp = tokenizer.getNext();
             }
-            selectInfo.setConditionTree(ConditionTree.parseToConditionTree(conditionTokenList));
+            selectInfo.setConditionExpression(ConditionExpression.parseToConditionExpression(conditionTokenList));
         }
 
         String isOrder = tokenizer.getCurrentToken();
@@ -114,6 +122,7 @@ public class Analyzer {
                     selectInfo.setAscending(true);
                     break;
                 case "desc":
+                    selectInfo.setAscending(false);
                     break;
                 default:
                     throw new MySqlSyntaxException("unknown sort order -- " + sortOrder);
@@ -145,7 +154,7 @@ public class Analyzer {
             conditionTokenList.add(temp);
             temp = tokenizer.getNext();
         }
-        deleteInfo.setConditionTree(ConditionTree.parseToConditionTree(conditionTokenList));
+        deleteInfo.setConditionExpression(ConditionExpression.parseToConditionExpression(conditionTokenList));
         tokenizer.checkRedundant();
 
         return deleteInfo;
