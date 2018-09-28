@@ -1,5 +1,7 @@
 package MyMiniSQL.Interpreter;
 
+import MyMiniSQL.Analyzer.Comparison;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -9,6 +11,10 @@ public class Tokenizer{
     private static final String tokenRegex = "(\'(.*?)[^\\\\]\')|(-?[\\d]+\\.?[\\d]*)|\\w+|[^\\s]";
             //the regex matches (from left to right) charArray('s\'tr') , number(32, 3.14, -23), word, symbols except (' ', '\t', '\n')
     private static final Pattern sqlPattern = Pattern.compile(tokenRegex);
+
+    public List<String> getSpliced() {
+        return spliced;
+    }
 
     private List<String> spliced;
     private int step = -1;
@@ -21,22 +27,19 @@ public class Tokenizer{
         while(matcher.find()){
             spliced.add(matcher.group());
         }
-        this.addTail();
     }
 
     public Tokenizer(List<String> tokenList){
         this.spliced = tokenList;
-        this.addTail();
     }
 
-    private void addTail(){
-        //add ';' as the tail
-        String last = spliced.get(spliced.size() - 1);
-        if(!last.equals(";")){
-            spliced.add(";");
-        }
+    public boolean isEnded(){
+        return (step >= spliced.size() - 1);
     }
 
+    public List<String> getRest(){
+        return spliced.subList(step + 1, spliced.size());
+    }
 
     /**
      * for input likes ["a", ",", "b", ",","c","from"...] / or ["a", "from"...]
@@ -163,5 +166,60 @@ public class Tokenizer{
 
     String getTokenListAsString(){
         return spliced.toString();
+    }
+
+
+    //use right after the '(' to pair
+    public List<String> getUntilPairedRightBracket() throws MySqlSyntaxException {
+        int bracketNumber = 1;
+        List<String> tokens = new ArrayList<>();
+
+        String temp = this.getNextThrowNull();
+
+        if(temp.equals(")")){
+            return tokens;
+        }
+        while(bracketNumber > 0){
+            if(temp.equals("(")){
+                bracketNumber++;
+            }
+            tokens.add(temp);
+            temp = this.getNextThrowNull();
+
+            if(temp.equals(")")){
+                bracketNumber--;
+            }
+        }
+
+        return tokens;
+    }
+
+    public Comparison getNextComparison() throws MySqlSyntaxException {
+        String temp = this.getNext();
+        switch (temp){
+            case "=":
+                if(this.getNext().equals("=")){
+                    return Comparison.eq;
+                }else {
+                    this.backOneStep();
+                    return Comparison.eq;
+                }
+            case "<":
+                if(this.getNext().equals("=")){
+                    return Comparison.le;
+                }else {
+                    this.backOneStep();
+                    return Comparison.lt;
+                }
+            case ">":
+                if(this.getNext().equals("=")){
+                    return Comparison.be;
+                }else {
+                    this.backOneStep();
+                    return Comparison.bt;
+                }
+            default:
+                throw new MySqlSyntaxException("unknown compare symbol -- " + temp);
+        }
     }
 }

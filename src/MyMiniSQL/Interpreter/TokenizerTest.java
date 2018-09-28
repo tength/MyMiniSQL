@@ -5,12 +5,17 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.fail;
+
 public class TokenizerTest {
 
     private static final String select = "seLecT * from t1 where name>='Queen 大小解决\\' the odd' and title = 'sdf HHH k' order by name ;";
     private static final String create = "Create Table aaa (sno char(8), sname char(16) unique,sage int,sgender char (1),smoney float,primary key ( sno ));";
     private static final String insertSQL = "insert into student values('123456', 'hzx', 20, 'Male', 3.44, -23, -24.44);";
+    private static final String bracketedClause = "(the take is to help me, you, him) after, life";
 
+    private static final String exceptionInCorrectTokens = "get error in correct tokens";
 
     private void showTokenizer(Tokenizer t){
         API.show(t.getTokenListAsString());
@@ -67,5 +72,19 @@ public class TokenizerTest {
     public void testCheckNextIsNot() throws MySqlSyntaxException {
         Tokenizer t = new Tokenizer(select);
         t.assertNextIs("select");
+    }
+
+    @Test
+    public void testGetUntilPairedRightBracket(){
+        Tokenizer t = new Tokenizer(bracketedClause);
+        t.getNext();
+        try {
+            List<String> inBrackets = t.getUntilPairedRightBracket();
+            API.show(inBrackets.toString());
+            assertEquals(t.getNext(), "after");
+        } catch (MySqlSyntaxException e) {
+            e.printStackTrace();
+            fail(exceptionInCorrectTokens);
+        }
     }
 }

@@ -43,7 +43,6 @@ public class Analyzer {
 
         String firstTokenAfterFrom = tokenizer.getNext();
         if(firstTokenAfterFrom.equals("(")){
-            List<String> recursiveSelectTokens = new ArrayList<>();
 
             tokenizer.assertNextIs("select");
 
@@ -52,26 +51,7 @@ public class Analyzer {
                 throw new MySqlSyntaxException("Empty select clause!");
             }
 
-            int bracketCounter = 1;
-            //pair the brackets
-            while(bracketCounter > 0){
-                if(temp.equals("(")){
-                    bracketCounter++;
-                }
-
-                //add the tokens to combine another select clause
-                recursiveSelectTokens.add(temp);
-
-                temp = tokenizer.getNext();
-                if(temp == null){
-                    throw new MySqlSyntaxException(Integer.toString(bracketCounter) + " Unclosed bracket in clause!");
-                }
-
-                //be here to make sure jump out the loop without adding the last ')'
-                if(temp.equals(")")){
-                    bracketCounter--;
-                }
-            }
+            List<String> recursiveSelectTokens = tokenizer.getUntilPairedRightBracket();
 
             selectInfo.setRecursiveSelect(select(new Tokenizer(recursiveSelectTokens)));
 
@@ -102,7 +82,7 @@ public class Analyzer {
                 }
                 temp = tokenizer.getNext();
             }
-            selectInfo.setConditionExpression(ConditionExpression.parseToConditionExpression(conditionTokenList));
+            selectInfo.setConditionExpression(new ConditionExpression(conditionTokenList));
         }
 
         String isOrder = tokenizer.getCurrentToken();
@@ -154,7 +134,7 @@ public class Analyzer {
             conditionTokenList.add(temp);
             temp = tokenizer.getNext();
         }
-        deleteInfo.setConditionExpression(ConditionExpression.parseToConditionExpression(conditionTokenList));
+        deleteInfo.setConditionExpression(new ConditionExpression(conditionTokenList));
         tokenizer.checkRedundant();
 
         return deleteInfo;

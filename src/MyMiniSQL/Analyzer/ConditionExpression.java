@@ -5,67 +5,67 @@ import MyMiniSQL.Interpreter.Tokenizer;
 import MyMiniSQL.RecordManager.Tuple;
 
 import java.util.List;
-import java.util.ListIterator;
 
 public class ConditionExpression {
-    ConditionNode root;
+    private ConditionNode root;
 
-    public static ConditionExpression parseToConditionExpression(List<String> conditionTokens){
-        //todo
-
-        return null;
+    ConditionExpression(List<String> conditionTokens) throws MySqlSyntaxException {
+        root = parseToNode(conditionTokens);
     }
 
-    public static ConditionNode parseToNode(List<String> conditionTokens) throws MySqlSyntaxException {
+    @Override
+    public String toString() {
+        return root.toString();
+    }
 
-        //todo: 我真的不会写了，过几天再说吧。
+    private static ConditionNode parseToNode(List<String> conditionTokens) throws MySqlSyntaxException {
 
+        if(conditionTokens == null || conditionTokens.isEmpty()){
+            throw new MySqlSyntaxException("no tokens to parse");
+        }
+
+        ConditionNode parsed = null;
 
         Tokenizer tokenizer = new Tokenizer(conditionTokens);
-        String temp = tokenizer.getNext();
-        if(Analyzer.isValidId(temp)){
+
+        String temp = tokenizer.getNextThrowNull();
+
+        if(temp.equals("(")){
+            List<String> bracketedContent = tokenizer.getUntilPairedRightBracket();
+            parsed = parseToNode(bracketedContent);
+        }else if(Analyzer.isValidId(temp)){
             //accept likes ["a", "<", "3"]
             String attrName = temp;
-            Comparison comparison;
-            temp = tokenizer.getNext();
-            switch (temp){
-                case "=":
-                    if(tokenizer.getNext().equals("=")){
-                        comparison = Comparison.eq;
-                    }else {
-                        tokenizer.backOneStep();
-                        comparison = Comparison.eq;
-                    }
-                    break;
-                case "<":
-                    if(tokenizer.getNext().equals("=")){
-                        comparison = Comparison.le;
-                    }else {
-                        tokenizer.backOneStep();
-                        comparison = Comparison.lt;
-                    }
-                    break;
-                case ">":
-                    if(tokenizer.getNext().equals("=")){
-                        comparison = Comparison.be;
-                    }else {
-                        tokenizer.backOneStep();
-                        comparison = Comparison.bt;
-                    }
-                default:
-                    throw new MySqlSyntaxException("unknown compare symbol -- " + temp);
-            }
+            Comparison comparison = tokenizer.getNextComparison();
             temp = tokenizer.getNext();
             ConstantValue value = new ConstantValue(temp);
-
+            parsed = new LeafConditionNode(comparison, attrName, value);
         }
-        return null;
+
+        if(tokenizer.isEnded()){
+            return parsed;
+        }else {
+            temp = tokenizer.getNext();
+            InnerConditionNode.LogicOP logicOP;
+            switch (temp) {
+                //todo: Implementing operator priority of 'and' and 'or'
+                case "and":
+                    logicOP = InnerConditionNode.LogicOP.and;
+                    break;
+                case "or":
+                    logicOP = InnerConditionNode.LogicOP.or;
+                    break;
+                default:
+                    throw new MySqlSyntaxException("Unknown logic operation -- " + temp);
+            }
+            return new InnerConditionNode (logicOP, parsed, parseToNode(tokenizer.getRest()));
+        }
     }
 
 }
 
 class ConditionNode{
-    boolean judge(Tuple t){return false;};
+    boolean judge(Tuple t){return false;}
 }
 
 class InnerConditionNode extends ConditionNode{
@@ -73,8 +73,8 @@ class InnerConditionNode extends ConditionNode{
         and, or
     }
 
-    LogicOP op;
-    ConditionNode left, right;
+    private LogicOP op;
+    private ConditionNode left, right;
 
     @Override
     boolean judge(Tuple t) {
@@ -93,23 +93,35 @@ class InnerConditionNode extends ConditionNode{
         this.left = left;
         this.right = right;
     }
+
+    @Override
+    public String toString() {
+        return String.format("(%s %s %s)", left.toString(), op.toString(), right.toString());
+    }
 }
 
 class LeafConditionNode extends ConditionNode{
-    Comparison comparison;
-    String attr;
-    ConstantValue value;
+    private Comparison comparison;
+    private String attr;
+    private ConstantValue value;
     int attrIndex = -1;
 
+    LeafConditionNode(Comparison comparison, String attr, ConstantValue value){
+        this.comparison = comparison;
+        this.attr = attr;
+        this.value = value;
+    }
 
-    void parseValue(){
-
+    @Override
+    public String toString() {
+        return String.format("(%s %s %s)", attr, comparison, value.toString());
     }
 
     boolean judge(Tuple t){
+        //todo
         switch (comparison){
             case ne:
-
+                break;
         }
         return false;
     }

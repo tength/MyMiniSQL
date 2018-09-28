@@ -19,7 +19,7 @@ public class ConstantValue {
 
     @Override
     public String toString() {
-        return String.format(" (%s, %s) ", value, type.toString());
+        return String.format(" (%s, %s)", value, type.toString());
     }
 
     static private String squeeze(String s) throws MySqlSyntaxException {

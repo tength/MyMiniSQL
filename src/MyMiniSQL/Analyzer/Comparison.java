@@ -9,6 +9,30 @@ public enum Comparison {
     ne  //not equal
     ;
 
+    @Override
+    public String toString() {
+        return getSymbolStr(this);
+    }
+
+    private static String getSymbolStr(Comparison comparison){
+        switch (comparison){
+            case ne:
+                return "!=";
+            case lt:
+                return "<";
+            case le:
+                return "<=";
+            case eq:
+                return "=";
+            case bt:
+                return ">";
+            case be:
+                return ">=";
+            default:
+                return "";
+        }
+    }
+
 //    public static Comparison reverse(Comparison toReverse){
 //        switch (toReverse){
 //            case be:
