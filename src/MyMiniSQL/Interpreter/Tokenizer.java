@@ -12,7 +12,23 @@ public class Tokenizer{
             //the regex matches (from left to right) charArray('s\'tr') , number(32, 3.14, -23), word, symbols except (' ', '\t', '\n')
 
     private static final Pattern sqlTokenPattern = Pattern.compile(sqlTokenRegex);
-
+    static String toLowerCaseIgnoreQuotedPart(String toLow){
+        char[] chars = toLow.toCharArray();
+        int lengthLimit = toLow.length() - 1;
+        boolean flag = true;
+        for(int i = 0; i < lengthLimit; i++){
+            if(chars[i] != '\\' && chars[i+1] == '\''){
+                flag = !flag;
+            }
+            if(flag && Character.isUpperCase(chars[i])){
+                chars[i] = Character.toLowerCase(chars[i]);
+            }
+        }
+        if(Character.isUpperCase(chars[lengthLimit])){
+            chars[lengthLimit] = Character.toLowerCase(chars[lengthLimit]);
+        }
+        return new String(chars);
+    }
     private List<String> spliced;
     private int step = -1;
 
@@ -135,6 +151,11 @@ public class Tokenizer{
                     this.backOneStep();
                     return Comparison.bt;
                 }
+            case "!":
+                if(this.getNext().equals("=")){
+                    return Comparison.ne;
+                }
+                //throw error if not ["!", "="]
             default:
                 throw new MySqlSyntaxException("unknown compare symbol -- " + temp);
         }
@@ -147,7 +168,7 @@ public class Tokenizer{
      * combine before, current, after tokens as the context if allowed
      * @return the context
      */
-    public String getContext(){
+    private String getContext(){
         StringBuilder builder = new StringBuilder();
         if(step > 0){
             builder.append(spliced.get(step - 1));
@@ -191,23 +212,7 @@ public class Tokenizer{
         return tokens;
     }
 
-    static String toLowerCaseIgnoreQuotedPart(String toLow){
-        char[] chars = toLow.toCharArray();
-        int lengthLimit = toLow.length() - 1;
-        boolean flag = true;
-        for(int i = 0; i < lengthLimit; i++){
-            if(chars[i] != '\\' && chars[i+1] == '\''){
-                flag = !flag;
-            }
-            if(flag && Character.isUpperCase(chars[i])){
-                chars[i] = Character.toLowerCase(chars[i]);
-            }
-        }
-        if(Character.isUpperCase(chars[lengthLimit])){
-            chars[lengthLimit] = Character.toLowerCase(chars[lengthLimit]);
-        }
-        return new String(chars);
-    }
+
 
     private String getCurrentToken(){
         if(step < 0) {

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class Analyzer {
 
-    private static Pattern idPattern = Pattern.compile("\\w+");
+    private static Pattern idPattern = Pattern.compile("^[a-zA-Z]\\w*");
 
     public static boolean isValidId(String id){
         return idPattern.matcher(id).matches();
@@ -42,6 +42,7 @@ public class Analyzer {
 
         String firstTokenAfterFrom = tokenizer.getNext();
         if(firstTokenAfterFrom.equals("(")){
+            //deal with recursive select clause
 
             tokenizer.assertNextIs("select");
 
@@ -55,6 +56,7 @@ public class Analyzer {
             selectInfo.setRecursiveSelect(select(new Tokenizer(recursiveSelectTokens)));
 
         }else {
+            //deal with tableNames
             tokenizer.backOneStep();
             selectInfo.setTablesToSelectFrom(tokenizer.getTokensSplicedBy(","));
         }
@@ -274,7 +276,7 @@ public class Analyzer {
                 dropType = DropInfo.DropType.DropIndex;
                 break;
             default:
-                throw new MySqlSyntaxException(tokenizer.getContext());
+                throw new MySqlSyntaxException("Unknown drop type -- " + typeString);
         }
 
         String name = tokenizer.getNext();

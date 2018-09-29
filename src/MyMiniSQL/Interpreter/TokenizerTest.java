@@ -11,9 +11,6 @@ import static junit.framework.TestCase.fail;
 public class TokenizerTest {
 
     private static final String select = "seLecT * from t1 where name>='Queen 大小解决\\' the odd' and title = 'sdf HHH k' order by name ;";
-    private static final String create = "Create Table aaa (sno char(8), sname char(16) unique,sage int,sgender char (1),smoney float,primary key ( sno ));";
-    private static final String insertSQL = "insert into student values('123456', 'hzx', 20, 'Male', 3.44, -23, -24.44);";
-    private static final String bracketedClause = "(the take is to help me, you, him) after, life";
 
     private static final String exceptionInCorrectTokens = "get error in correct tokens";
 
@@ -60,11 +57,13 @@ public class TokenizerTest {
 
     @Test
     public void testInsert(){
+        final String insertSQL = "insert into student values('123456', 'hzx', 20, 'Male', 3.44, -23, -24.44);";
         testString(insertSQL);
     }
 
     @Test
     public void testCreate(){
+        final String create = "Create Table aaa (sno char(8), sname char(16) unique,sage int,sgender char (1),smoney float,primary key ( sno ));";
         testString(create);
     }
 
@@ -76,6 +75,8 @@ public class TokenizerTest {
 
     @Test
     public void testGetUntilPairedRightBracket(){
+        final String bracketedClause = "(the take is to help me, you, him) after, life";
+
         Tokenizer t = new Tokenizer(bracketedClause);
         t.getNext();
         try {

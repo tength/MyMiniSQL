@@ -33,12 +33,44 @@ public class ConditionExpression {
         if(temp.equals("(")){
             List<String> bracketedContent = tokenizer.getUntilPairedRightBracket();
             parsed = parseToNode(bracketedContent);
-        }else if(Analyzer.isValidId(temp)){
-            //accept likes ["a", "<", "3"]
-            String attrName = temp;
+        }else {
+            String attrName = null;
+            ConstantValue value = null;
+            boolean firstTokenIsConstant = false;
+
+            //accept likes ["a", "<", "3"] or ["3", ">", "a"]
+            if(Analyzer.isValidId(temp)){
+                firstTokenIsConstant = false;
+                attrName = temp;
+            }else if(Analyzer.isConstantValue(temp)){
+                firstTokenIsConstant = true;
+                value = new ConstantValue(temp);
+            }else{
+                throw new MySqlSyntaxException("Incomparable token -- " + temp);
+            }
+//            String attrName = temp;
             Comparison comparison = tokenizer.getNextComparison();
             temp = tokenizer.getNext();
-            ConstantValue value = new ConstantValue(temp);
+
+            if(Analyzer.isConstantValue(temp)){
+                if(firstTokenIsConstant) {
+                    throw new MySqlSyntaxException("should not compare two constant values" + value.toString() + " " + temp);
+                }else {
+                    value = new ConstantValue(temp);
+                }
+            }else if(Analyzer.isValidId(temp)){
+                if(firstTokenIsConstant) {
+                    attrName = temp;
+                }else {
+                    throw new MySqlSyntaxException("should not compare two attributes (unimplemented)" + attrName + temp);
+                }
+            }else {
+                throw new MySqlSyntaxException("Incomparable token -- " + temp);
+            }
+//            ConstantValue value = new ConstantValue(temp);
+            if(firstTokenIsConstant){
+                comparison = Comparison.reverse(comparison);
+            }
             parsed = new LeafConditionNode(comparison, attrName, value);
         }
 
@@ -114,7 +146,7 @@ class LeafConditionNode extends ConditionNode{
 
     @Override
     public String toString() {
-        return String.format("(%s %s %s)", attr, comparison, value.toString());
+        return String.format("[%s %s %s]", attr, comparison, value.toString());
     }
 
     boolean judge(Tuple t){

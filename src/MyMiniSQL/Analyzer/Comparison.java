@@ -33,22 +33,22 @@ public enum Comparison {
         }
     }
 
-//    public static Comparison reverse(Comparison toReverse){
-//        switch (toReverse){
-//            case be:
-//                return le;
-//            case le:
-//                return be;
-//            case bt:
-//                return lt;
-//            case lt:
-//                return bt;
-//            case eq:
-//                return eq;
-//            case ne:
-//                return ne;
-//            default:
-//                return toReverse;
-//        }
-//    }
+    public static Comparison reverse(Comparison toReverse){
+        switch (toReverse){
+            case be:
+                return le;
+            case le:
+                return be;
+            case bt:
+                return lt;
+            case lt:
+                return bt;
+            case eq:
+                return eq;
+            case ne:
+                return ne;
+            default:
+                return toReverse;
+        }
+    }
 }
