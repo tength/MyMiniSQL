@@ -19,4 +19,14 @@ public class DeleteInfo {
     public void setConditionExpression(ConditionExpression conditionExpression) {
         this.conditionExpression = conditionExpression;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Delete: ").append("\n");
+        builder.append("TableName: ").append(tableName).append("\n");
+        builder.append("Condition: ").append(conditionExpression.toString()).append("\n");
+
+        return builder.toString();
+    }
 }

@@ -16,8 +16,7 @@ public class ConditionExpressionTest {
     private static final String conditionWithBrackets = "a>4 and (b<5 or a<9) or r>= 'spoke'";
 
     private static void Parse(String toParse) throws MySqlSyntaxException {
-        Tokenizer tokenizer = new Tokenizer(toParse);
-        List<String> tokens = tokenizer.getSpliced();
+        List<String> tokens = Tokenizer.splitIntoTokens(toParse);
         ConditionExpression conditionExpression = new ConditionExpression(tokens);
         API.show(conditionExpression.toString());
     }

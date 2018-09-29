@@ -39,6 +39,21 @@ public class AnalyzerTest {
 
     @Test
     public void delete() {
+        final String deleteSQL = "delete from t1 where s1 = 2 and a3 >= 5";
+
+        Tokenizer tokenizer = new Tokenizer(deleteSQL);
+        tokenizer.getNext();
+
+        DeleteInfo deleteInfo;
+
+        try {
+            deleteInfo = Analyzer.delete(tokenizer);
+            API.show(deleteInfo.toString());
+        } catch (MySqlSyntaxException e) {
+            e.printStackTrace();
+            fail(getExceptionInCorrectSentence);
+        }
+
     }
 
     @Test

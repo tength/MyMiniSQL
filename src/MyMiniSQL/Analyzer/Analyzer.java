@@ -118,6 +118,7 @@ public class Analyzer {
     static public DeleteInfo delete(Tokenizer tokenizer) throws MySqlSyntaxException {
         //todo: untested!
         tokenizer.assertNextIs("from");
+
         String tableName = tokenizer.getNext();
 
         DeleteInfo deleteInfo = new DeleteInfo(tableName);
@@ -126,6 +127,8 @@ public class Analyzer {
         if(afterTableName == null || afterTableName.equals(";")){
             tokenizer.checkRedundant();
             return deleteInfo;
+        }else {
+            tokenizer.backOneStep();
         }
 
         tokenizer.assertNextIs("where");
