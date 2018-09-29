@@ -10,11 +10,11 @@ public class SelectInfo {
     }
 
     public void setTablesToSelectFrom(List<String> tablesToSelectFrom) {
-        this.TablesToSelectFrom = tablesToSelectFrom;
+        this.tablesToSelectFrom = tablesToSelectFrom;
     }
 
     private List<String> attributesToSelect = new ArrayList<>();
-    private List<String> TablesToSelectFrom = new ArrayList<>();
+    private List<String> tablesToSelectFrom = new ArrayList<>();
 
     private SelectInfo recursiveSelect = null;
 
@@ -25,6 +25,44 @@ public class SelectInfo {
 
     //sort on ascending or descending
     private boolean isAscending = true;
+
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("Select: \n");
+
+        builder.append("AttributesToSelect: ");
+        if(attributesToSelect != null) {
+            builder.append(attributesToSelect.toString());
+        }else{
+            builder.append("*");
+        }
+        builder.append("\n");
+
+        if(isRecursiveSelect()){
+            builder.append("RecursiveSelect: ").append(recursiveSelect.toString()).append("\n");
+        }else {
+            builder.append("TablesToSelectFrom: ").append(tablesToSelectFrom.toString()).append("\n");
+        }
+
+        builder.append("Condition: ");
+        if(conditionExpression != null){
+            builder.append(conditionExpression.toString());
+        }else {
+            builder.append("no condition");
+        }
+        builder.append("\n");
+
+        builder.append("Order by: ");
+        if(isExplicitOrdered()){
+            builder.append(orderedAttributeName).append("\n");
+        }else {
+            builder.append("primary key").append("\n");
+        }
+
+        builder.append("Is Ascending: ").append(isAscending).append("\n");
+
+        return builder.toString();
+    }
 
     SelectInfo(){}
 
@@ -37,11 +75,15 @@ public class SelectInfo {
     }
 
     public List<String> getTablesToSelectFrom() {
-        return TablesToSelectFrom;
+        return tablesToSelectFrom;
     }
 
-    public boolean getRecursiveSelect() {
-        return recursiveSelect == null;
+    public boolean isRecursiveSelect() {
+        return recursiveSelect != null;
+    }
+
+    public boolean isExplicitOrdered(){
+        return orderedAttributeName != null;
     }
 
     public ConditionExpression getConditionExpression() {

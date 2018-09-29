@@ -27,7 +27,6 @@ public class Analyzer {
     }
 
     static public SelectInfo select(Tokenizer tokenizer) throws MySqlSyntaxException {
-        //todo: untested!
         SelectInfo selectInfo = new SelectInfo();
 
         String firstToSelect = tokenizer.getNext();
@@ -39,7 +38,7 @@ public class Analyzer {
             selectInfo.setAttributesToSelect(null);
         }
 
-        tokenizer.assertCurrentIs("from");
+        tokenizer.assertNextIs("from");
 
         String firstTokenAfterFrom = tokenizer.getNext();
         if(firstTokenAfterFrom.equals("(")){
@@ -58,7 +57,6 @@ public class Analyzer {
         }else {
             tokenizer.backOneStep();
             selectInfo.setTablesToSelectFrom(tokenizer.getTokensSplicedBy(","));
-            tokenizer.backOneStep();
         }
 
         String afterSelectFrom = tokenizer.getNext();
@@ -69,23 +67,27 @@ public class Analyzer {
 
         if(tokenizer.ifCurrentIs("where")){
             List<String> conditionTokenList = new ArrayList<>();
+            boolean flag = true;
             String temp = tokenizer.getNext();
-            while(temp != null){
+            while(flag && temp != null){
                 switch (temp){
                     case ";":
+                        flag = false;
                         tokenizer.checkRedundant();
                         break;
                     case "order":
+                        flag = false;
+                        tokenizer.backOneStep();
                         break;
                     default:
                         conditionTokenList.add(temp);
+                        temp = tokenizer.getNext();
                 }
-                temp = tokenizer.getNext();
             }
             selectInfo.setConditionExpression(new ConditionExpression(conditionTokenList));
         }
 
-        String isOrder = tokenizer.getCurrentToken();
+        String isOrder = tokenizer.getNext();
         if(isOrder != null && isOrder.equals("order")){
             tokenizer.assertNextIs("by");
             String attributeToSortBy = tokenizer.getNext();

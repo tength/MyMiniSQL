@@ -8,7 +8,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class AnalyzerTest {
-    private static final String selectSQL = "seLecT * from t1 where name>='Queen 大小解决\\' the odd' and title = 'sdf HHH k' order by name ;";
 
     private static final String createTableSQL = "Create Table aaa (sno char(8), sname char(16) ,sage int,sgender char (1),smoney float,primary key ( sno ));";
     private static final String createIndexSQL = "create index stuNoIndex on student(sTuNO)";
@@ -22,6 +21,20 @@ public class AnalyzerTest {
 
     @Test
     public void select() {
+        final String selectSQL = "seLecT * from t1 where name>='Queen 大小解决\\' the odd' and title = 'sdf HHH k' order by name ;";
+
+        Tokenizer tokenizer = new Tokenizer(selectSQL);
+        tokenizer.getNext();
+
+        SelectInfo selectInfo;
+
+        try {
+            selectInfo = Analyzer.select(tokenizer);
+            API.show(selectInfo.toString());
+        } catch (MySqlSyntaxException e) {
+            e.printStackTrace();
+            fail(getExceptionInCorrectSentence);
+        }
     }
 
     @Test
