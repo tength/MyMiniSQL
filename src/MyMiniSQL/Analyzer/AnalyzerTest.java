@@ -22,8 +22,11 @@ public class AnalyzerTest {
     @Test
     public void select() {
         final String selectSQL = "seLecT * from t1 where name>='Queen 大小解决\\' the odd' and title = 'sdf HHH k' order by name ;";
+        selectTestHelper(selectSQL);
+    }
 
-        Tokenizer tokenizer = new Tokenizer(selectSQL);
+    private void selectTestHelper(String selectSQL){
+       Tokenizer tokenizer = new Tokenizer(selectSQL);
         tokenizer.getNext();
 
         SelectInfo selectInfo;
@@ -35,6 +38,12 @@ public class AnalyzerTest {
             e.printStackTrace();
             fail(getExceptionInCorrectSentence);
         }
+    }
+
+    @Test
+    public void recursiveSelect(){
+        final String recSelectSQL = "select * from (select * from t1 where a > 0 and b <6) where ss = 99";
+        selectTestHelper(recSelectSQL);
     }
 
     @Test

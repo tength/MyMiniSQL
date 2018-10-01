@@ -38,12 +38,6 @@ public class SelectInfo {
         }
         builder.append("\n");
 
-        if(isRecursiveSelect()){
-            builder.append("RecursiveSelect: ").append(recursiveSelect.toString()).append("\n");
-        }else {
-            builder.append("TablesToSelectFrom: ").append(tablesToSelectFrom.toString()).append("\n");
-        }
-
         builder.append("Condition: ");
         if(conditionExpression != null){
             builder.append(conditionExpression.toString());
@@ -60,6 +54,16 @@ public class SelectInfo {
         }
 
         builder.append("Is Ascending: ").append(isAscending).append("\n");
+
+        if(isRecursiveSelect()){
+            builder.append("========== Recursive Select ==========").append("\n").
+                    append(recursiveSelect.toString()).append("\n").
+                    append("=============== Rec End ==============\n");
+        }else {
+            builder.append("TablesToSelectFrom: ").append(tablesToSelectFrom.toString()).append("\n");
+        }
+
+
 
         return builder.toString();
     }

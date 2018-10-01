@@ -1,6 +1,6 @@
 package MyMiniSQL.Analyzer;
 
-public enum Comparison {
+public enum CompareOp {
     bt, //bigger than
     lt, //less than
     eq, //equal
@@ -14,10 +14,10 @@ public enum Comparison {
         return getSymbolStr(this);
     }
 
-    private static String getSymbolStr(Comparison comparison){
-        switch (comparison){
+    private static String getSymbolStr(CompareOp compareOp){
+        switch (compareOp){
             case ne:
-                return "!=";
+                return "<>";
             case lt:
                 return "<";
             case le:
@@ -29,11 +29,11 @@ public enum Comparison {
             case be:
                 return ">=";
             default:
-                return "";
+                throw new IllegalStateException("unknown compare op to convert");
         }
     }
 
-    public static Comparison reverse(Comparison toReverse){
+    public static CompareOp reverse(CompareOp toReverse){
         switch (toReverse){
             case be:
                 return le;

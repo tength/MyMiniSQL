@@ -45,14 +45,7 @@ public class Analyzer {
             //deal with recursive select clause
 
             tokenizer.assertNextIs("select");
-
-            String temp = tokenizer.getNext();
-            if(temp.equals(")")){
-                throw new MySqlSyntaxException("Empty select clause!");
-            }
-
             List<String> recursiveSelectTokens = tokenizer.getUntilPairedRightBracket();
-
             selectInfo.setRecursiveSelect(select(new Tokenizer(recursiveSelectTokens)));
 
         }else {

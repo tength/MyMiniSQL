@@ -49,7 +49,7 @@ public class ConditionExpression {
                 throw new MySqlSyntaxException("Incomparable token -- " + temp);
             }
 //            String attrName = temp;
-            Comparison comparison = tokenizer.getNextComparison();
+            CompareOp compareOp = tokenizer.getNextComparison();
             temp = tokenizer.getNext();
 
             if(Analyzer.isConstantValue(temp)){
@@ -62,16 +62,16 @@ public class ConditionExpression {
                 if(firstTokenIsConstant) {
                     attrName = temp;
                 }else {
-                    throw new MySqlSyntaxException("should not compare two attributes (unimplemented)" + attrName + temp);
+                    throw new MySqlSyntaxException("should not compare two attributes (unimplemented)" + attrName + " " + temp);
                 }
             }else {
                 throw new MySqlSyntaxException("Incomparable token -- " + temp);
             }
 //            ConstantValue value = new ConstantValue(temp);
             if(firstTokenIsConstant){
-                comparison = Comparison.reverse(comparison);
+                compareOp = CompareOp.reverse(compareOp);
             }
-            parsed = new LeafConditionNode(comparison, attrName, value);
+            parsed = new LeafConditionNode(compareOp, attrName, value);
         }
 
         if(tokenizer.isEnded()){
@@ -80,7 +80,7 @@ public class ConditionExpression {
             temp = tokenizer.getNext();
             InnerConditionNode.LogicOP logicOP;
             switch (temp) {
-                //todo: Implementing operator priority of 'and' and 'or'
+                //todo: Implement operator priority of 'and' and 'or'
                 case "and":
                     logicOP = InnerConditionNode.LogicOP.and;
                     break;
@@ -128,30 +128,30 @@ class InnerConditionNode extends ConditionNode{
 
     @Override
     public String toString() {
-        return String.format("(%s %s %s)", left.toString(), op.toString(), right.toString());
+        return String.format("[%s %s %s]", left.toString(), op.toString(), right.toString());
     }
 }
 
 class LeafConditionNode extends ConditionNode{
-    private Comparison comparison;
+    private CompareOp compareOp;
     private String attr;
     private ConstantValue value;
     int attrIndex = -1;
 
-    LeafConditionNode(Comparison comparison, String attr, ConstantValue value){
-        this.comparison = comparison;
+    LeafConditionNode(CompareOp compareOp, String attr, ConstantValue value){
+        this.compareOp = compareOp;
         this.attr = attr;
         this.value = value;
     }
 
     @Override
     public String toString() {
-        return String.format("[%s %s %s]", attr, comparison, value.toString());
+        return String.format("(%s %s %s)", attr, compareOp, value.toString());
     }
 
     boolean judge(Tuple t){
         //todo
-        switch (comparison){
+        switch (compareOp){
             case ne:
                 break;
         }

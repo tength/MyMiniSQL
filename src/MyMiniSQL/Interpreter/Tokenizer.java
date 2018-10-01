@@ -1,6 +1,6 @@
 package MyMiniSQL.Interpreter;
 
-import MyMiniSQL.Analyzer.Comparison;
+import MyMiniSQL.Analyzer.CompareOp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,33 +127,37 @@ public class Tokenizer{
             return temp;
         }
     }
-    public Comparison getNextComparison() throws MySqlSyntaxException {
+    public CompareOp getNextComparison() throws MySqlSyntaxException {
         String temp = this.getNext();
         switch (temp){
             case "=":
                 if(this.getNext().equals("=")){
-                    return Comparison.eq;
+                    return CompareOp.eq;
                 }else {
                     this.backOneStep();
-                    return Comparison.eq;
+                    return CompareOp.eq;
                 }
             case "<":
-                if(this.getNext().equals("=")){
-                    return Comparison.le;
-                }else {
-                    this.backOneStep();
-                    return Comparison.lt;
+                String nextSymbol = this.getNext();
+                switch (nextSymbol) {
+                    case "=":
+                        return CompareOp.le;
+                    case ">":
+                        return CompareOp.ne;
+                    default:
+                        this.backOneStep();
+                        return CompareOp.lt;
                 }
             case ">":
                 if(this.getNext().equals("=")){
-                    return Comparison.be;
+                    return CompareOp.be;
                 }else {
                     this.backOneStep();
-                    return Comparison.bt;
+                    return CompareOp.bt;
                 }
             case "!":
                 if(this.getNext().equals("=")){
-                    return Comparison.ne;
+                    return CompareOp.ne;
                 }
                 //throw error if not ["!", "="]
             default:

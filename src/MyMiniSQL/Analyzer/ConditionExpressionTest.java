@@ -15,7 +15,7 @@ public class ConditionExpressionTest {
 
     private static void Parse(String toParse, boolean shouldPass) {
         List<String> tokens = Tokenizer.splitIntoTokens(toParse);
-        ConditionExpression conditionExpression = null;
+        ConditionExpression conditionExpression;
         try {
             conditionExpression = new ConditionExpression(tokens);
             API.show(conditionExpression.toString());
@@ -42,7 +42,7 @@ public class ConditionExpressionTest {
 
     @Test
     public void test_constant_op_attr_Pairs(){
-        final String constant_op_attr_str = "4<a or (7!=B and 1.0<=s0) or 88=X and 'zero'>= ww and 8.8<=rtt";
+        final String constant_op_attr_str = "4<a or (7<>B and 1.0<=s0) or 88=X and 'zero'>= ww and 8.8<=rtt";
         Parse(constant_op_attr_str, true);
     }
 
