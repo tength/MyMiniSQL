@@ -1,6 +1,7 @@
-package MyMiniSQL.Interpreter;
+package MyMiniSQL.Tokenizer;
 
 import MyMiniSQL.Analyzer.CompareOp;
+import MyMiniSQL.Interpreter.MySqlSyntaxException;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package MyMiniSQL.Analyzer;
 
 import MyMiniSQL.Interpreter.MySqlSyntaxException;
-import MyMiniSQL.Interpreter.Tokenizer;
+import MyMiniSQL.Tokenizer.Tokenizer;
 import MyMiniSQL.RecordManager.Tuple;
 
 import java.util.List;
@@ -34,44 +34,30 @@ public class ConditionExpression {
             List<String> bracketedContent = tokenizer.getUntilPairedRightBracket();
             parsed = parseToNode(bracketedContent);
         }else {
-            String attrName = null;
+            String leftAttr = null;
             ConstantValue value = null;
-            boolean firstTokenIsConstant = false;
+            boolean rightIsAttr = false;
 
-            //accept likes ["a", "<", "3"] or ["3", ">", "a"]
+            //accept likes ["a", "<", "3"] or ["b", ">", "c"]
             if(Analyzer.isValidId(temp)){
-                firstTokenIsConstant = false;
-                attrName = temp;
+                leftAttr = temp;
             }else if(Analyzer.isConstantValue(temp)){
-                firstTokenIsConstant = true;
-                value = new ConstantValue(temp);
+                throw new MySqlSyntaxException("the first token in comparison should not be constant rightValue -- " + temp);
             }else{
                 throw new MySqlSyntaxException("Incomparable token -- " + temp);
             }
-//            String attrName = temp;
             CompareOp compareOp = tokenizer.getNextComparison();
             temp = tokenizer.getNext();
 
             if(Analyzer.isConstantValue(temp)){
-                if(firstTokenIsConstant) {
-                    throw new MySqlSyntaxException("should not compare two constant values" + value.toString() + " " + temp);
-                }else {
-                    value = new ConstantValue(temp);
-                }
-            }else if(Analyzer.isValidId(temp)){
-                if(firstTokenIsConstant) {
-                    attrName = temp;
-                }else {
-                    throw new MySqlSyntaxException("should not compare two attributes (unimplemented)" + attrName + " " + temp);
-                }
+                value = new ConstantValue(temp);
+                parsed = new LeafConditionNode(compareOp, leftAttr, value);
+            } else if(Analyzer.isValidId(temp)){
+                String rightAttr = temp;
+                parsed = new LeafConditionNode(compareOp, leftAttr, rightAttr);
             }else {
                 throw new MySqlSyntaxException("Incomparable token -- " + temp);
             }
-//            ConstantValue value = new ConstantValue(temp);
-            if(firstTokenIsConstant){
-                compareOp = CompareOp.reverse(compareOp);
-            }
-            parsed = new LeafConditionNode(compareOp, attrName, value);
         }
 
         if(tokenizer.isEnded()){
@@ -96,11 +82,7 @@ public class ConditionExpression {
 
 }
 
-class ConditionNode{
-    boolean judge(Tuple t){return false;}
-}
-
-class InnerConditionNode extends ConditionNode{
+class InnerConditionNode implements ConditionNode{
     enum LogicOP{
         and, or
     }
@@ -109,7 +91,7 @@ class InnerConditionNode extends ConditionNode{
     private ConditionNode left, right;
 
     @Override
-    boolean judge(Tuple t) {
+    public boolean judge(Tuple t) {
         switch (op){
             case or:
                 return left.judge(t) || right.judge(t);
@@ -132,24 +114,39 @@ class InnerConditionNode extends ConditionNode{
     }
 }
 
-class LeafConditionNode extends ConditionNode{
+class LeafConditionNode implements ConditionNode{
     private CompareOp compareOp;
-    private String attr;
-    private ConstantValue value;
-    int attrIndex = -1;
+    private String leftAttr;
 
-    LeafConditionNode(CompareOp compareOp, String attr, ConstantValue value){
+    private boolean isRightAttr;
+    private String rightAttr;
+    private ConstantValue rightValue;
+
+    LeafConditionNode(CompareOp compareOp, String leftAttr, ConstantValue rightValue){
         this.compareOp = compareOp;
-        this.attr = attr;
-        this.value = value;
+        this.leftAttr = leftAttr;
+        this.rightValue = rightValue;
+        this.isRightAttr = false;
+    }
+
+    LeafConditionNode(CompareOp compareOp, String leftAttr, String rightAttr){
+        this.compareOp = compareOp;
+        this.leftAttr = leftAttr;
+        this.rightAttr = rightAttr;
+        this.isRightAttr = true;
     }
 
     @Override
     public String toString() {
-        return String.format("(%s %s %s)", attr, compareOp, value.toString());
+        if(isRightAttr)
+        {
+            return String.format("(%s %s %s)", leftAttr, compareOp, rightAttr);
+        }else {
+            return String.format("(%s %s %s)", leftAttr, compareOp, rightValue.toString());
+        }
     }
 
-    boolean judge(Tuple t){
+    public boolean judge(Tuple t){
         //todo
         switch (compareOp){
             case ne:

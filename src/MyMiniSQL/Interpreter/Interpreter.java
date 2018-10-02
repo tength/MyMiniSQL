@@ -1,6 +1,6 @@
 package MyMiniSQL.Interpreter;
 
-import MyMiniSQL.API;
+import MyMiniSQL.Tokenizer.Tokenizer;
 
 public class Interpreter {
     static public void InterpretSingle(String singleStatement){

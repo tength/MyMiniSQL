@@ -1,6 +1,7 @@
-package MyMiniSQL.Interpreter;
+package MyMiniSQL.Tokenizer;
 
 import MyMiniSQL.API;
+import MyMiniSQL.Interpreter.MySqlSyntaxException;
 import org.junit.Test;
 
 import java.util.List;

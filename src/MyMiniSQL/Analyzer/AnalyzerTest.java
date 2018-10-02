@@ -2,7 +2,7 @@ package MyMiniSQL.Analyzer;
 
 import MyMiniSQL.API;
 import MyMiniSQL.Interpreter.MySqlSyntaxException;
-import MyMiniSQL.Interpreter.Tokenizer;
+import MyMiniSQL.Tokenizer.Tokenizer;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

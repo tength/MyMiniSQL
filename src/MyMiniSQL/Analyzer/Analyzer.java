@@ -2,7 +2,7 @@ package MyMiniSQL.Analyzer;
 
 import MyMiniSQL.CatalogManager.DataType;
 import MyMiniSQL.Interpreter.MySqlSyntaxException;
-import MyMiniSQL.Interpreter.Tokenizer;
+import MyMiniSQL.Tokenizer.Tokenizer;
 
 import java.util.ArrayList;
 import java.util.List;

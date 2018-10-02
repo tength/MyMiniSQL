@@ -1,5 +1,6 @@
 package MyMiniSQL.RecordManager;
 
+import MyMiniSQL.Analyzer.ConditionNode;
 import MyMiniSQL.Analyzer.DeleteInfo;
 import MyMiniSQL.Analyzer.InsertInfo;
 import MyMiniSQL.Analyzer.SelectInfo;
@@ -18,7 +19,7 @@ public class RecordManager {
     }
 
     /**
-     * select the tuples satisfy the conditionTree in the selectInfo, by do a loop to check the conditionTree, and finally sort the tuples if need.
+     * select tuples with selectInfo, by do a loop to check the conditionTree, and finally sort the tuples if need.
      * use this function when it's hard to make use of index
      * @param selectInfo select info
      * @return sorted tuples satisfy the conditionTree
@@ -28,7 +29,7 @@ public class RecordManager {
     }
 
     /**
-     * delete the tuples satisfy the conditionTree and return the number of deleted tuples.
+     * delete tuples with deleteInfo and return the number of deleted tuples.
      * @param deleteInfo delete Info
      * @return number of deleted tuples
      */
@@ -51,13 +52,10 @@ public class RecordManager {
     /**
      * join table1 and table2 by table1.attribute1 = table2.attribute2 and return a result table
      * @param table1 table 1
-     * @param attributeName1 attribute 1
      * @param table2 table 2
-     * @param attributeName2 attribute 2
      * @return result table after joined
      */
-    static public ResultTable join(ResultTable table1, String attributeName1,
-                            ResultTable table2, String attributeName2){
+    static public ResultTable join(ResultTable table1, ResultTable table2, ConditionNode onCondtion){
         return null;
     }
 
